@@ -41,11 +41,15 @@ export class ErrorDealMiddleware implements KoaMiddlewareInterface {
   async use(context: any, next: (err?: any) => any): Promise<any> {
     try {
       await next()
-    } catch {
-      context.response.status=500
+    } catch(e) {
+      if(e.errorInfo) {
+        context.response.status=200
+      } else {
+        context.response.status=500
+      }
       context.response.body= {
         returnCode:'1',
-        errorInfo:'服务器内部错误！',
+        errorInfo:e.errorInfo || '服务器内部错误！',
       }
     }
   }
